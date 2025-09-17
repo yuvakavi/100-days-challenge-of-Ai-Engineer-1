@@ -1,0 +1,39 @@
+import random
+
+# Food menu dictionary
+menu = {
+    "pizza": ["We have Margherita, Farmhouse, and Pepperoni pizza."],
+    "burger": ["Veg Burger, Cheese Burger, and Chicken Burger are available."],
+    "pasta": ["Choose from White Sauce, Red Sauce, or Mix Sauce Pasta."],
+    "drinks": ["We offer Coke, Pepsi, and Lemonade."],
+    "dessert": ["We have Ice Cream, Brownie, and Cheesecake."]
+}
+
+# Default responses
+default_responses = [
+    "Sorry, I didn’t understand. Can you try again?",
+    "We don’t have that item. Please check our menu.",
+    "Hmm, that’s not on today’s list!"
+]
+
+def food_chatbot():
+    print("🍽️ Welcome to FoodBot! Type 'exit' to quit.")
+    while True:
+        user_input = input("You: ").lower()
+        
+        if user_input == "exit":
+            print("FoodBot: Thank you! Have a tasty day 😋")
+            break
+        
+        found = False
+        for item in menu:
+            if item in user_input:
+                print("FoodBot:", random.choice(menu[item]))
+                found = True
+                break
+        
+        if not found:
+            print("FoodBot:", random.choice(default_responses))
+
+# Run chatbot
+food_chatbot()
