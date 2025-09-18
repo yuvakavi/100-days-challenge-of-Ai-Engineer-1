@@ -1,0 +1,26 @@
+from collections import deque
+
+# Simple friend network (graph)
+friends = {
+    "You": ["Alice", "Bob"],
+    "Alice": ["Cathy", "Dan"],
+    "Bob": ["Eve"],
+    "Cathy": [],
+    "Dan": ["Frank"],
+    "Eve": [],
+    "Frank": []
+}
+
+def bfs(network, start):
+    visited = set()
+    queue = deque([start])
+    
+    while queue:
+        person = queue.popleft()
+        if person not in visited:
+            print(person)
+            visited.add(person)
+            queue.extend(network[person])  # add direct friends
+
+print("BFS Friend Search starting from You:")
+bfs(friends, "You")
