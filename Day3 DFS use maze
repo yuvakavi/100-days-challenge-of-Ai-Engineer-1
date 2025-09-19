@@ -1,0 +1,28 @@
+def dfs(maze,x,y,visted,path):
+    n=len(maze)
+    if (x,y)==(n-1,n-1):
+        path.append((x,y))
+        return True
+    visted.add((x,y))
+    path.append((x,y))
+    directions=[(1,0),(0,1),(-1,0),(0-1)]
+    for dx,dy in directions:
+        nx,ny=x+dx,y+dy
+        if 0<=nx<n and 0<=ny<n and maze[nx][ny]==0 and (nx,ny) not in visted:
+            if dfs(maze,nx,ny,visted,path):
+                return True
+    path.pop()
+    return False
+maze=[
+    [[0, 1, 0, 0, 0],
+    [0, 1, 0, 1, 0],
+    [0, 0, 0, 1, 0],
+    [1, 1, 0, 1, 0],
+    [0, 0, 0, 0, 0]]
+]
+visted=set()
+path=[]
+if dfs(maze,0,0,visted,path):
+    print("path found:",path) 
+else :
+    print("no path found")         
