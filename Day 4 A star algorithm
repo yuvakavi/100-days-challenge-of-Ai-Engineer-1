@@ -1,0 +1,54 @@
+#A*= find path with lowest cost
+import heapq
+# heuristic cost find
+# A* Algorithm (f(n)=g(n)+h(n))
+#f(n)=toatl cost of the node
+#g(n)=cost from start to currrent node
+#h(n)=heuristic cost from current node to goal node
+def heuristic(a,b):
+    #Manhatten distance
+    return abs(b[0]-b[0]) +abs(a[1]-b[1])
+def a_star(grid, start, goal):
+    rows, cols = len(grid), len(grid[0])
+    open_set = [(0, start)]  # (score, node)
+    came_from = {}
+    g = {start: 0}
+
+    while open_set:
+        _, current = heapq.heappop(open_set)
+        if current == goal:
+            # Rebuild path
+            path = []
+            while current in came_from:
+                path.append(current)
+                current = came_from[current]
+            return [start] + path[::-1]
+
+        for dx, dy in [(1,0), (-1,0), (0,1), (0,-1)]:
+            nx, ny = current[0]+dx, current[1]+dy
+            if 0 <= nx < rows and 0 <= ny < cols and grid[nx][ny] != "#":
+                new_g = g[current] + 1
+                if new_g < g.get((nx,ny), float("inf")):
+                    came_from[(nx,ny)] = current
+                    g[(nx,ny)] = new_g
+                    f = new_g + heuristic((nx,ny), goal)
+                    heapq.heappush(open_set, (f, (nx,ny)))
+    return None
+
+# Example
+grid = [
+    ["S",".","."],
+    [".","#","."],
+    [".",".","G"]
+]
+
+path = a_star(grid, (0,0), (2,2))
+print("Path:", path)
+
+
+
+        
+         
+
+
+
