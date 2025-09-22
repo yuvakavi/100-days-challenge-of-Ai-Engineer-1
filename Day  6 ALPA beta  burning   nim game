@@ -1,0 +1,56 @@
+import math
+
+def minimax(sticks, maximizing, alpha, beta):
+    if sticks == 0:  # No sticks left → last player won
+        return (-1 if maximizing else 1), None
+
+    best_move = None
+    if maximizing:  # AI turn
+        max_eval = -math.inf
+        for move in [1,2,3]:
+            if move > sticks: continue
+            eval_score, _ = minimax(sticks - move, False, alpha, beta)
+            if eval_score > max_eval:
+                max_eval, best_move = eval_score, move
+            alpha = max(alpha, eval_score)
+            if beta <= alpha:
+                break
+        return max_eval, best_move
+    else:  # Human turn
+        min_eval = math.inf
+        for move in [1,2,3]:
+            if move > sticks: continue
+            eval_score, _ = minimax(sticks - move, True, alpha, beta)
+            if eval_score < min_eval:
+                min_eval, best_move = eval_score, move
+            beta = min(beta, eval_score)
+            if beta <= alpha:
+                break
+        return min_eval, best_move
+
+# --------- Game Loop ---------
+def play_nim():
+    sticks = 10
+    print("Welcome to Nim Game! Take 1, 2 or 3 sticks. Last stick wins!")
+
+    while sticks > 0:
+        print(f"Sticks left: {sticks}")
+        # Human turn
+        move = int(input("Your move: "))
+        if move < 1 or move > 3 or move > sticks:
+            print("Invalid move!")
+            continue
+        sticks -= move
+        if sticks == 0:
+            print("You win!")
+            break
+
+        # AI turn
+        _, ai_move = minimax(sticks, True, -math.inf, math.inf)
+        print(f"AI takes: {ai_move}")
+        sticks -= ai_move
+        if sticks == 0:
+            print("AI wins!")
+            break
+
+play_nim()
