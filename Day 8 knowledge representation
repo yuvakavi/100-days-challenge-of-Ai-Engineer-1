@@ -1,0 +1,11 @@
+def is_man(person):
+    return person in ["socrates","Plato","Artistotle"]
+def is_mortal(person):
+    if is_man(person):
+        return True
+    return False
+person = "socrates"
+if is_mortal(person):
+    print(f"{person} is mortal")
+else:
+    print(f"{person} is not mortal")    
