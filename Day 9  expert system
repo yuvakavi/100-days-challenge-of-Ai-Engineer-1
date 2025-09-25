@@ -1,0 +1,28 @@
+def diagnose(symptoms):
+    symptoms = symptoms.lower()
+
+    if "fever" in symptoms and "cough" in symptoms and "sore throat" in symptoms:
+        return "Common Cold"
+    elif "fever" in symptoms and "cough" in symptoms and "body ache" in symptoms:
+        return "Influenza (Flu)"
+    elif "fever" in symptoms and "chills" in symptoms and "sweating" in symptoms:
+        return "Malaria"
+    elif "fever" in symptoms and "rash" in symptoms and "body pain" in symptoms:
+        return "Dengue"
+    elif "fever" in symptoms and "rash" in symptoms and "itching" in symptoms:
+        return "Chickenpox"
+    elif "fever" in symptoms and "dry cough" in symptoms and "loss of taste" in symptoms:
+        return "COVID-19"
+    elif "burning urination" in symptoms and "abdominal pain" in symptoms:
+        return "Urinary Tract Infection"
+    elif "headache" in symptoms and "nausea" in symptoms and "light sensitivity" in symptoms:
+        return "Migraine"
+    else:
+        return "No clear diagnosis. Please consult a doctor."
+
+# ---- Main Program ----
+print("Medical Expert System")
+print("Enter your symptoms separated by commas.")
+user_input = input("Symptoms: ")
+result = diagnose(user_input)
+print("Possible Diagnosis:", result)
