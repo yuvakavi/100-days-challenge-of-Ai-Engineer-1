@@ -1,0 +1,26 @@
+action = {
+    "fill_tank": {
+        "pre": {"At(home)", "Tank(empty)"},
+        "add": {"Tank(full)"},
+        "del": {"Tank(empty)"}
+    },
+    "Drive": {
+        "pre": {"At(home)", "Tank(full)"},
+        "add": {"At(office)", "Tank(empty)"},
+        "del": {"At(home)", "Tank(full)"}
+    }
+}
+
+state = {"At(home)", "Tank(empty)", "Have(car)"}
+goal = {"At(office)"}
+plan = []
+
+while not goal.issubset(state):
+    for act, eff in action.items():
+        if eff["pre"].issubset(state):
+            state = (state - eff["del"]) | eff["add"]
+            plan.append(act)
+            break
+
+print("Plan:", " -> ".join(plan))
+print("Final state:", state)            
