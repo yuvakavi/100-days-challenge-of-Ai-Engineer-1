@@ -1,0 +1,20 @@
+# Simple Predicate Logic Inference with Unification
+
+facts = [
+    ("Parent", "Alice", "Bob"),
+    ("Parent", "Bob", "Charlie")
+]
+
+def ancestor(x, y):
+    # Rule 1: If Parent(X, Y) then Ancestor(X, Y)
+    for f in facts:
+        if f[0] == "Parent" and f[1] == x and f[2] == y:
+            return True
+    # Rule 2: If Parent(X, Z) and Ancestor(Z, Y) then Ancestor(X, Y)
+    for f in facts:
+        if f[0] == "Parent" and f[1] == x:
+            if ancestor(f[2], y):
+                return True
+    return False
+
+print("Is Alice ancestor of Charlie?", ancestor("Alice", "Charlie"))
