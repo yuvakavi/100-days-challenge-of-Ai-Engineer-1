@@ -1,0 +1,32 @@
+def fuzzy_weather(temp, humidity):
+    # Simple fuzzy sets
+    if temp < 15:
+        temp_state = "cold"
+    elif 15 <= temp <= 30:
+        temp_state = "warm"
+    else:
+        temp_state = "hot"
+
+    if humidity < 40:
+        hum_state = "low"
+    elif 40 <= humidity <= 70:
+        hum_state = "medium"
+    else:
+        hum_state = "high"
+
+    # Simple fuzzy rules
+    if temp_state == "hot" and hum_state == "low":
+        return "Sunny"
+    elif temp_state == "warm" and hum_state == "medium":
+        return "Cloudy"
+    elif temp_state == "cold" and hum_state == "high":
+        return "Rainy"
+    elif temp_state == "warm" and hum_state == "high":
+        return "Rainy"
+    else:
+        return "Uncertain"
+
+# Example test
+print(fuzzy_weather(22, 65))  # Warm + High → Rainy
+print(fuzzy_weather(35, 20))  # Hot + Low → Sunny
+print(fuzzy_weather(10, 80))  # Cold + High → Rainy
