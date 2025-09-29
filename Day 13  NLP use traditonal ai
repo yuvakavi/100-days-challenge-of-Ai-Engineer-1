@@ -1,0 +1,15 @@
+# Super simple grammar-based parser
+
+def parse(sentence):
+    words = sentence.split()
+    # Very small grammar rules:
+    # Sentence = NounPhrase + VerbPhrase
+    if len(words) == 3 and words[0] in ["John", "Mary"] and words[1] in ["likes", "sees"] and words[2] in ["dog", "cat"]:
+        return "S -> NP VP\nNP -> Name\nVP -> V N\nValid Sentence"
+    else:
+        return "Invalid Sentence (not in grammar)"
+
+# Test
+print(parse("John sees dog"))
+print(parse("Mary likes cat"))
+print(parse("dog sees John"))
