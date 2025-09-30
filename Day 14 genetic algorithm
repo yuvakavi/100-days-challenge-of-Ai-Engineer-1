@@ -1,0 +1,29 @@
+import random
+
+# Fitness function: maximize f(x) = x^2
+def fitness(x):
+    return x * x
+
+# Step 1: Initialize population (random numbers between -10 and 10)
+population = [random.randint(-10, 10) for _ in range(6)]
+
+# Run for 5 generations
+for generation in range(5):
+    # Step 2: Evaluate and sort by fitness
+    population = sorted(population, key=fitness, reverse=True)
+    best = population[0]
+    print(f"Gen {generation} | Best x = {best}, f(x) = {fitness(best)}")
+    
+    # Step 3: Select parents (top 2)
+    parents = population[:2]
+    
+    # Step 4: Crossover + Mutation → create children
+    children = []
+    for _ in range(4):  # create 4 children
+        child = random.choice(parents) + random.randint(-1, 1)  # mutation
+        # Keep child within range [-10, 10]
+        child = max(-10, min(10, child))
+        children.append(child)
+    
+    # Step 5: New population = parents + children
+    population = parents + children
