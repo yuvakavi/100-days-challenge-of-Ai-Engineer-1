@@ -1,0 +1,75 @@
+# Simple Spam Detection with Logistic Regression
+# This code teaches a computer to detect spam messages
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer  
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+# 1. Simple but effective dataset
+# 15 normal messages and 15 spam messages
+messages = [
+    # Normal messages (ham)
+    'Hey how are you', 'Can we meet tomorrow', 'Thanks for help', 'What time meeting',
+    'Have great day', 'How was weekend', 'Send me report', 'Good morning friend',
+    'See you later', 'Call me free', 'Hope you well', 'Nice to meet',
+    'Thank you much', 'Have good time', 'Talk to you',
+    
+    # Spam messages  
+    'WIN money NOW', 'FREE cash CLICK', 'URGENT account CLOSE', 'WON lottery CALL',
+    'CASH advance TODAY', 'LOSE weight FAST', 'CREDIT repair NOW', 'WORK home EARN',
+    'FREE iPhone SHIP', 'CONGRATULATIONS won', 'CLAIM prize HURRY', 'WINNER selected YOU',
+    'OFFER limited TIME', 'SAVE money BIG', 'MAKE fortune EASY'
+]
+
+labels = ['ham']*15 + ['spam']*15
+
+# Create simple dataset
+sample_data = {
+    'label': labels,
+    'message': messages
+}
+
+data = pd.DataFrame(sample_data)
+
+# Convert labels: ham=0, spam=1
+data['label'] = data['label'].map({'ham': 0, 'spam': 1})
+
+# 2. Split data: 80% for training, 20% for testing
+X_train, X_test, y_train, y_test = train_test_split(
+    data['message'], data['label'], test_size=0.2, random_state=42
+)
+
+# 3. Convert words to numbers (computers understand numbers, not words)
+vectorizer = TfidfVectorizer(max_features=50)  
+X_train_tfidf = vectorizer.fit_transform(X_train)
+X_test_tfidf = vectorizer.transform(X_test)
+
+print(f"📊 Simple Dataset:")
+print(f"   Total messages: {len(data)}")
+print(f"   Training: {len(X_train)}, Testing: {len(X_test)}")
+print(f"   Features: {X_train_tfidf.shape[1]}")
+
+# 4. Train simple Logistic Regression
+model = LogisticRegression()
+model.fit(X_train_tfidf, y_train)
+
+# 5. Predictions & Evaluation
+y_pred = model.predict(X_test_tfidf)
+
+print("✅ Accuracy:", accuracy_score(y_test, y_pred))
+print("\nConfusion Matrix:\n", confusion_matrix(y_test, y_pred))
+print("\nClassification Report:\n", classification_report(y_test, y_pred))
+
+# 6. Test new messages
+test_msg = ["You won $500! Claim now!", "How are you today?"]
+
+test_tfidf = vectorizer.transform(test_msg)
+predictions = model.predict(test_tfidf)
+
+print("\n🔍 Test Results:")
+for i, msg in enumerate(test_msg):
+    result = "SPAM" if predictions[i] == 1 else "NORMAL"
+    print(f"   '{msg}' → {result}")
+
