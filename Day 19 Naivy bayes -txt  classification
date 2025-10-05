@@ -1,0 +1,41 @@
+# Naive Bayes – Text Classification Example
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import accuracy_score
+
+# 1. Sample text data
+texts = [
+    "Win money now", 
+    "Limited time offer", 
+    "Call for free prize", 
+    "Hello friend how are you", 
+    "Let's go out for lunch", 
+    "Are you coming today"
+]
+
+# 2. Labels (1 = Spam, 0 = Not Spam)
+labels = [1, 1, 1, 0, 0, 0]
+
+# 3. Convert text to numeric form (Bag of Words)
+vectorizer = CountVectorizer()
+X = vectorizer.fit_transform(texts)
+
+# 4. Split data into train & test
+X_train, X_test, y_train, y_test = train_test_split(X, labels, test_size=0.33, random_state=42)
+
+# 5. Create and train Naive Bayes model
+model = MultinomialNB()
+model.fit(X_train, y_train)
+
+# 6. Predict on test data
+y_pred = model.predict(X_test)
+
+# 7. Evaluate accuracy
+print("Accuracy:", accuracy_score(y_test, y_pred))
+
+# 8. Test new message
+new_text = ["Win a free trip today"]
+new_vector = vectorizer.transform(new_text)
+prediction = model.predict(new_vector)
+print("Prediction:", "Spam" if prediction[0] == 1 else "Not Spam")
