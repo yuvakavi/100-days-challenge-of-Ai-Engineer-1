@@ -1,0 +1,41 @@
+# Decision Tree – Student Pass/Fail Prediction
+
+# Step 1: Import libraries
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.metrics import accuracy_score, classification_report
+import matplotlib.pyplot as plt
+
+# Step 2: Create sample dataset
+data = {
+    'Study_Hours': [2, 4, 6, 1, 7, 3, 8, 5, 9, 10],
+    'Attendance': [60, 70, 90, 40, 95, 65, 85, 75, 98, 99],
+    'Sleep_Hours': [8, 7, 6, 9, 5, 8, 6, 7, 5, 5],
+    'Result': [0, 0, 1, 0, 1, 0, 1, 1, 1, 1]  # 1 = Pass, 0 = Fail
+}
+
+df = pd.DataFrame(data)
+
+# Step 3: Split data
+X = df[['Study_Hours', 'Attendance', 'Sleep_Hours']]
+y = df['Result']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Step 4: Create Decision Tree model
+model = DecisionTreeClassifier(criterion='entropy', max_depth=3, random_state=42)
+model.fit(X_train, y_train)
+
+# Step 5: Predictions
+y_pred = model.predict(X_test)
+
+# Step 6: Evaluation
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print("\nClassification Report:\n", classification_report(y_test, y_pred))
+
+# Step 7: Visualize the Decision Tree
+plt.figure(figsize=(10,6))
+plot_tree(model, feature_names=X.columns, class_names=['Fail', 'Pass'], filled=True)
+plt.title("Decision Tree - Student Pass/Fail Prediction")
+plt.show()
