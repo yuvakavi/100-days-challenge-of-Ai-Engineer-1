@@ -1,0 +1,35 @@
+#Import Libraries
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+#Create Sample Data
+# Sample dataset
+data = {
+    'Credit_Score': [700, 600, 650, 800, 720, 580, 690, 710],
+    'Income': [50000, 40000, 45000, 80000, 60000, 35000, 48000, 62000],
+    'Loan_Amount': [200000, 150000, 180000, 250000, 220000, 130000, 200000, 210000],
+    'Approved': [1, 0, 0, 1, 1, 0, 1, 1]  # 1 = Approved, 0 = Not Approved
+}
+
+df = pd.DataFrame(data)
+#Split Features & Target
+X = df[['Credit_Score', 'Income', 'Loan_Amount']]  # Features
+y = df['Approved']                                 # Target
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.36, random_state=42)
+#Train Random Forest Classifier
+model=RandomForestClassifier(n_estimators=100,random_state=42)
+model.fit(X_train,y_train)
+#Make Predictions
+y_pred=model.predict(X_test)
+#Evaluate Accuracy
+accuracy_score=accuracy_score(y_test,y_pred)
+print("Accuracy:",accuracy_score)
+#Test with a New Applicant
+new_application=[[680,5800,600000]]
+prediction=model.predict(new_application)
+if prediction[0]==1:
+    print("Loan Approved")
+else:
+    print("Loan Not Approved")
