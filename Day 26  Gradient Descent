@@ -1,0 +1,45 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Step 1: Create sample data (y = 2x + 1)
+X = np.array([1, 2, 3, 4, 5])
+Y = np.array([3, 5, 7, 9, 11])  # Perfect line (m=2, c=1)
+
+# Step 2: Initialize parameters
+m = 0
+c = 0
+learning_rate = 0.01
+epochs = 1000  # number of iterations
+n = len(X)
+
+# Step 3: Gradient Descent Loop
+for i in range(epochs):
+    Y_pred = m * X + c  # predicted values
+    error = Y - Y_pred
+
+    # Gradients
+    dm = (-2/n) * sum(X * error)
+    dc = (-2/n) * sum(error)
+
+    # Update parameters
+    m = m - learning_rate * dm
+    c = c - learning_rate * dc
+
+    # Optional: print every 100 iterations
+    if i % 100 == 0:
+        cost = (1/n) * sum(error ** 2)
+        print(f"Epoch {i}: m={m:.3f}, c={c:.3f}, cost={cost:.4f}")
+
+# Step 4: Final results
+print("\nFinal values:")
+print(f"m = {m:.3f}, c = {c:.3f}")
+
+# Step 5: Plot
+plt.scatter(X, Y, color='blue', label='Actual')
+plt.plot(X, m*X + c, color='red', label='Predicted line')
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.legend()
+plt.title('Gradient Descent Linear Regression')
+plt.show()
+ 
