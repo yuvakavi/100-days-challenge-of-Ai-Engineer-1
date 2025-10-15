@@ -1,0 +1,83 @@
+🌳 1️⃣ Bagging Classifier – Simple Manual Data
+from sklearn.ensemble import BaggingClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+
+# 🧮 Manual Dataset
+# X = [Weight, Texture]
+X = [
+    [150, 0],
+    [170, 0],
+    [140, 0],
+    [130, 0],
+    [180, 1],
+    [200, 1],
+    [160, 1],
+    [220, 1]
+]
+
+# Labels (0 = Apple, 1 = Orange)
+y = [0, 0, 0, 0, 1, 1, 1, 1]
+
+# Train-Test Split manually
+X_train = X[:6]
+y_train = y[:6]
+X_test = X[6:]
+y_test = y[6:]
+
+# 🧠 Bagging Model
+bagging = BaggingClassifier(
+    estimator=DecisionTreeClassifier(),
+    n_estimators=5,
+    random_state=42
+)
+
+# Train
+bagging.fit(X_train, y_train)
+
+# Predict
+y_pred = bagging.predict(X_test)
+
+print("🎯 Bagging Predictions:", y_pred)
+print("Accuracy:", accuracy_score(y_test, y_pred))
+⚡ 2️⃣ AdaBoost Classifier – Simple Manual Data
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+
+# 🧮 Manual Dataset (same as above)
+X = [
+    [150, 0],
+    [170, 0],
+    [140, 0],
+    [130, 0],
+    [180, 1],
+    [200, 1],
+    [160, 1],
+    [220, 1]
+]
+
+y = [0, 0, 0, 0, 1, 1, 1, 1]
+
+# Train-Test Split manually
+X_train = X[:6]
+y_train = y[:6]
+X_test = X[6:]
+y_test = y[6:]
+
+# ⚡ AdaBoost Model
+adaboost = AdaBoostClassifier(
+    estimator=DecisionTreeClassifier(max_depth=1),
+    n_estimators=10,
+    learning_rate=1.0,
+    random_state=42
+)
+
+# Train
+adaboost.fit(X_train, y_train)
+
+# Predict
+y_pred = adaboost.predict(X_test)
+
+print("⚡ AdaBoost Predictions:", y_pred)
+print("Accuracy:", accuracy_score(y_test, y_pred))
