@@ -1,0 +1,31 @@
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler
+
+# ---- Step 1: Load Dataset ----
+data = {
+    'Name': ['Ram', 'Sita', 'Ravi', 'Lila'],
+    'Age': [25, 28, None, 32],
+    'Salary': [50000, 60000, 52000, None],
+    'Gender': ['Male', 'Female', 'Male', 'Female'],
+    'City': ['Delhi', 'Mumbai', 'Chennai', 'Delhi']
+}
+df = pd.DataFrame(data)
+print("Original Data:\n", df)
+
+# ---- Step 2: Handle Missing Values ----
+df['Age'].fillna(df['Age'].mean(), inplace=True)
+df['Salary'].fillna(df['Salary'].mean(), inplace=True)
+
+# ---- Step 3: Encode Categorical Variables ----
+le = LabelEncoder()
+df['Gender'] = le.fit_transform(df['Gender'])
+df['City'] = le.fit_transform(df['City'])
+
+# ---- Step 4: Feature Scaling ----
+scaler = MinMaxScaler()
+df[['Age', 'Salary']] = scaler.fit_transform(df[['Age', 'Salary']])
+
+# ---- Step 5: Create New Feature ----
+df['Age_to_Salary'] = df['Age'] / df['Salary']
+
+print("\nAfter Feature Engineering:\n", df)
