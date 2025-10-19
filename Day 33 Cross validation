@@ -1,0 +1,47 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split, GridSearchCV, KFold
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+
+# Sample dataset
+data = {
+    'N': [90, 40, 60, 100, 80, 50, 70, 85],
+    'P': [42, 30, 50, 45, 35, 40, 38, 44],
+    'K': [43, 20, 35, 48, 33, 40, 45, 42],
+    'Temperature': [20, 30, 25, 27, 22, 29, 24, 26],
+    'Humidity': [80, 60, 75, 70, 65, 68, 72, 78],
+    'pH': [6.5, 7.0, 6.8, 6.3, 6.7, 7.1, 6.9, 6.4],
+    'Rainfall': [200, 120, 180, 220, 160, 150, 190, 210],
+    'Crop': ['rice', 'cotton', 'maize', 'rice', 'cotton', 'maize', 'rice', 'maize']
+}
+
+df = pd.DataFrame(data)
+
+# Split data
+X = df.drop('Crop', axis=1)
+y = df['Crop']
+
+# Base model
+model = DecisionTreeClassifier()
+
+# Cross-validation
+kfold = KFold(n_splits=3, shuffle=True, random_state=42)
+cv_scores = []
+
+for train_idx, test_idx in kfold.split(X):
+    X_train, X_test = X.iloc[train_idx], X.iloc[test_idx]
+    y_train, y_test = y.iloc[train_idx], y.iloc[test_idx]
+    
+    model.fit(X_train, y_train)
+    preds = model.predict(X_test)
+    cv_scores.append(accuracy_score(y_test, preds))
+
+print("Cross-Validation Accuracy:", sum(cv_scores)/len(cv_scores))
+
+# Grid Search
+param_grid = {'max_depth': [2, 3, 4, 5], 'criterion': ['gini', 'entropy']}
+grid = GridSearchCV(DecisionTreeClassifier(), param_grid, cv=3)
+grid.fit(X, y)
+
+print("Best Parameters:", grid.best_params_)
+
