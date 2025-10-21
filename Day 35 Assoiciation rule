@@ -1,0 +1,19 @@
+from mlxtend.frequent_patterns import apriori, association_rules
+import pandas as pd
+
+# Example dataset (one-hot encoded)
+dataset = pd.DataFrame([
+    [1,1,0,0,0],
+    [1,1,1,1,0],
+    [1,0,1,1,1],
+    [1,1,1,1,0],
+    [1,1,0,0,1]
+], columns=['Milk','Bread','Beer','Diaper','Cola'])
+
+# Step 1: Find frequent itemsets
+frequent_itemsets = apriori(dataset, min_support=0.4, use_colnames=True)
+
+# Step 2: Generate rules
+rules = association_rules(frequent_itemsets, metric="lift", min_threshold=1)
+
+print(rules[['antecedents','consequents','support','confidence','lift']])
