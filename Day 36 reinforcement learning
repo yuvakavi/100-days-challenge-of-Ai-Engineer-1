@@ -1,0 +1,62 @@
+import numpy as np
+import random
+
+# Define the environment (5x5 grid)
+n_states = 5
+goal = (4, 4)
+
+# Initialize Q-table: states x actions (up, down, left, right)
+Q = np.zeros((n_states, n_states, 4))
+
+# Parameters
+alpha = 0.1      # learning rate
+gamma = 0.9      # discount factor
+epsilon = 0.2    # exploration rate
+episodes = 1000  # number of training runs
+
+# Actions: up, down, left, right
+actions = [( -1, 0 ), (1, 0), (0, -1), (0, 1)]
+
+# Helper: choose action
+def choose_action(state):
+    if random.uniform(0, 1) < epsilon:
+        return random.randint(0, 3)
+    else:
+        x, y = state
+        return np.argmax(Q[x, y])
+
+# Train
+for episode in range(episodes):
+    state = (0, 0)
+    while state != goal:
+        action_idx = choose_action(state)
+        dx, dy = actions[action_idx]
+        new_state = (max(0, min(n_states-1, state[0]+dx)),
+                     max(0, min(n_states-1, state[1]+dy)))
+
+        # Reward
+        reward = 10 if new_state == goal else -1
+
+        # Q-learning update
+        x, y = state
+        nx, ny = new_state
+        Q[x, y, action_idx] = Q[x, y, action_idx] + alpha * (
+            reward + gamma * np.max(Q[nx, ny]) - Q[x, y, action_idx]
+        )
+
+        state = new_state
+
+print("✅ Training complete!")
+
+# Test the learned policy
+state = (0, 0)
+path = [state]
+while state != goal:
+    x, y = state
+    action_idx = np.argmax(Q[x, y])
+    dx, dy = actions[action_idx]
+    state = (max(0, min(n_states-1, state[0]+dx)),
+             max(0, min(n_states-1, state[1]+dy)))
+    path.append(state)
+
+print("🏁 Learned Path:", path)
