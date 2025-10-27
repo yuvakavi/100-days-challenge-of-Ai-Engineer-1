@@ -1,0 +1,25 @@
+import numpy as np
+
+
+X = np.array([[0.5, 0.2]])   
+
+
+W1 = np.array([[0.4, 0.3],   
+               [0.7, 0.5]])  
+b1 = np.array([[0.1, 0.2]])  
+
+
+Z1 = np.dot(X, W1) + b1
+A1 = 1 / (1 + np.exp(-Z1))  
+
+
+W2 = np.array([[0.6],
+               [0.9]])
+b2 = np.array([[0.05]])
+
+
+Z2 = np.dot(A1, W2) + b2
+A2 = 1 / (1 + np.exp(-Z2))  
+
+print("Hidden layer output:", A1)
+print("Final output (prediction):", A2)
