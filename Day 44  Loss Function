@@ -1,0 +1,43 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 1. Create sample data
+np.random.seed(10)
+X = np.random.rand(50, 1) * 10  # house size
+y = 2.5 * X + 5 + np.random.randn(50, 1)  # price = 2.5x + 5 + noise
+
+# Initialize parameters
+w = 0.0
+b = 0.0
+learning_rate = 0.01
+
+# Define loss function (Mean Squared Error)
+def mse_loss(y_true, y_pred):
+    return np.mean((y_true - y_pred) ** 2)
+
+# Training (Gradient Descent)
+losses = []
+for epoch in range(1000):
+    y_pred = w * X + b
+    loss = mse_loss(y, y_pred)
+    losses.append(loss)
+
+    # Compute gradients
+    dw = (-2/len(X)) * np.sum(X * (y - y_pred))
+    db = (-2/len(X)) * np.sum(y - y_pred)
+
+    # Update parameters
+    w -= learning_rate * dw
+    b -= learning_rate * db
+
+# Results
+print(f"Final weight (w): {w:.2f}")
+print(f"Final bias (b): {b:.2f}")
+print(f"Final Loss: {losses[-1]:.4f}")
+
+# Plot
+plt.scatter(X, y, color='blue', label='Data')
+plt.plot(X, w*X + b, color='red', label='Model Prediction')
+plt.legend()
+plt.title("Linear Regression using MSE Loss")
+plt.show()
