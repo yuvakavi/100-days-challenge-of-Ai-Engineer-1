@@ -1,0 +1,30 @@
+import tensorflow as tf
+from tensorflow import keras
+import numpy as np
+X = np.array([
+    [2, 5, 20],
+    [3, 10, 15],
+    [4, 2, 10],
+    [5, 8, 5],
+    [6, 12, 2]
+], dtype=float)
+
+
+y = np.array([30, 45, 60, 80, 95], dtype=float)
+
+model = keras.Sequential([
+    keras.layers.Dense(8, input_dim=3, activation='relu'),  # Hidden layer
+    keras.layers.Dense(4, activation='relu'),
+    keras.layers.Dense(1)  # Output layer (price)
+])
+
+
+model.compile(optimizer='adam', loss='mean_squared_error')
+
+
+model.fit(X, y, epochs=200, verbose=0)
+
+
+test_house = np.array([[4, 6, 8]])  # 4 rooms, 6 years old, 8 km from city
+predicted_price = model.predict(test_house)
+print(f"Predicted House Price: {predicted_price[0][0]:.2f} lakhs")
