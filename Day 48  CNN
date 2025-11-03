@@ -1,0 +1,26 @@
+pip install tensorflow
+import tensorflow as tf
+from tensorflow.keras import layers, models
+model = models.Sequential([
+    layers.Conv2D(16, (3,3), activation='relu', input_shape=(64, 64, 3)),
+    layers.MaxPooling2D(2, 2),
+
+    layers.Conv2D(32, (3,3), activation='relu'),
+    layers.MaxPooling2D(2, 2),
+
+    layers.Flatten(),
+    layers.Dense(64, activation='relu'),
+    layers.Dense(1, activation='sigmoid')  # 1 → cat or dog
+])
+
+model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+model.summary()
+# Dummy training data just for understanding
+import numpy as np
+
+# 100 fake images (64x64x3), random pixels
+X = np.random.random((100, 64, 64, 3))
+# Random labels (0 = cat, 1 = dog)
+y = np.random.randint(0, 2, 100)
+
+model.fit(X, y, epochs=3)
