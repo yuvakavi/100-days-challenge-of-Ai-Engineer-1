@@ -1,0 +1,35 @@
+import numpy as np
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense, Embedding
+
+# Example small dataset
+words = ["I love mango", "I love apple", "I love banana"]
+unique_words = sorted(list(set(" ".join(words).split())))
+word_to_idx = {w: i for i, w in enumerate(unique_words)}
+idx_to_word = {i: w for w, i in word_to_idx.items()}
+
+# Prepare data
+X = []
+y = []
+for sentence in words:
+    tokens = sentence.split()
+    X.append([word_to_idx[tokens[0]], word_to_idx[tokens[1]]])
+    y.append(word_to_idx[tokens[2]])
+
+X = np.array(X)
+y = np.array(y)
+
+# Build LSTM model
+model = Sequential([
+    Embedding(input_dim=len(unique_words), output_dim=8, input_length=2),
+    LSTM(10),
+    Dense(len(unique_words), activation='softmax')
+])
+
+model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+model.fit(X, y, epochs=300, verbose=0)
+
+# Predict next word
+test = np.array([[word_to_idx["I"], word_to_idx["love"]]])
+pred = np.argmax(model.predict(test))
+print("Next word:", idx_to_word[pred])
