@@ -1,0 +1,52 @@
+# 🧠 Step 1: Install required library
+!pip install imbalanced-learn pandas scikit-learn
+
+# 📦 Step 2: Import Libraries
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+from imblearn.over_sampling import SMOTE
+
+# 📊 Step 3: Create Sample Crop Price Data
+data = {
+    'temperature': [25, 28, 32, 30, 24, 29, 27, 33, 22, 31],
+    'humidity': [80, 75, 70, 72, 85, 78, 82, 68, 90, 73],
+    'rainfall': [120, 100, 80, 90, 130, 110, 125, 70, 140, 95],
+    'soil_pH': [6.5, 6.8, 7.1, 6.9, 6.4, 7.0, 6.6, 7.2, 6.3, 6.7],
+    'crop_type': [0, 0, 0, 1, 1, 1, 1, 0, 0, 1]  # 0 = Wheat, 1 = Rice
+}
+
+df = pd.DataFrame(data)
+print("Original Data:\n", df)
+
+# 🧩 Step 4: Split Features and Labels
+X = df[['temperature', 'humidity', 'rainfall', 'soil_pH']]
+y = df['crop_type']
+
+# 🧮 Step 5: Apply SMOTE for Data Augmentation
+smote = SMOTE(random_state=42)
+X_resampled, y_resampled = smote.fit_resample(X, y)
+
+print("\nAfter SMOTE Augmentation:")
+print("Original samples:", len(y))
+print("Resampled samples:", len(y_resampled))
+
+# 📈 Step 6: Train-Test Split
+X_train, X_test, y_train, y_test = train_test_split(X_resampled, y_resampled, test_size=0.3, random_state=42)
+
+# 🌾 Step 7: Train a Simple Model
+model = RandomForestClassifier(random_state=42)
+model.fit(X_train, y_train)
+
+# 🔍 Step 8: Evaluate
+y_pred = model.predict(X_test)
+acc = accuracy_score(y_test, y_pred)
+
+print("\n✅ Model Accuracy after Augmentation:", round(acc * 100, 2), "%")
+
+# 🌽 Step 9: Test Prediction for New Input
+new_data = pd.DataFrame({'temperature': [29], 'humidity': [75], 'rainfall': [105], 'soil_pH': [6.8]})
+prediction = model.predict(new_data)
+crop = "Wheat 🌾" if prediction[0] == 0 else "Rice 🌾"
+print("\nPredicted Crop Type for Given Conditions:", crop)
