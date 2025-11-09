@@ -1,0 +1,59 @@
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Input, Dense
+
+# 🔹 Generate simple numeric data
+# Normal data: around 50 ± 5
+# Fraud data: around 100 ± 10
+normal_data = np.random.normal(50, 5, (1000, 3))
+fraud_data = np.random.normal(100, 10, (50, 3))
+
+# Combine & make labels
+X = np.vstack((normal_data, fraud_data))
+y = np.hstack((np.zeros(1000), np.ones(50)))  # 0 = normal, 1 = fraud
+
+# Scale data
+scaler = MinMaxScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Split
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
+
+# Use only NORMAL data for training
+X_train_normal = X_train[y_train == 0]
+
+# 🔹 Build Autoencoder
+input_dim = X_train_normal.shape[1]
+input_layer = Input(shape=(input_dim,))
+encoded = Dense(2, activation="relu")(input_layer)
+decoded = Dense(input_dim, activation="sigmoid")(encoded)
+
+autoencoder = Model(input_layer, decoded)
+autoencoder.compile(optimizer="adam", loss="mse")
+
+# 🔹 Train on NORMAL data
+autoencoder.fit(X_train_normal, X_train_normal,
+                epochs=30,
+                batch_size=16,
+                shuffle=True,
+                verbose=0)
+
+# 🔹 Reconstruction Error
+reconstructions = autoencoder.predict(X_test)
+mse = np.mean(np.power(X_test - reconstructions, 2), axis=1)
+
+# 🔹 Set threshold
+threshold = np.percentile(mse, 95)
+
+# 🔹 Predict anomalies
+y_pred = (mse > threshold).astype(int)
+
+# 🔹 Check performance
+accuracy = np.mean(y_pred == y_test)
+print(f"Accuracy: {accuracy*100:.2f}%")
+print("Threshold:", threshold)
+print("Example MSE values:", mse[:10])
+print("Predicted labels:", y_pred[:10])
