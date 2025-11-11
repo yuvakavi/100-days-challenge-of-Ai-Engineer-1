@@ -1,0 +1,19 @@
+# Install libraries (run in Colab or local)
+# pip install transformers torch
+
+from transformers import pipeline
+
+# Load a pretrained model for sentiment analysis
+sentiment_model = pipeline("sentiment-analysis")
+
+# Give some text inputs
+texts = [
+    "I love this product! It’s amazing 😍",
+    "This is the worst movie I’ve ever seen 😡",
+    "The service was okay, not great but not bad."
+]
+
+# Predict
+for t in texts:
+    result = sentiment_model(t)[0]
+    print(f"Text: {t}\nLabel: {result['label']}, Score: {result['score']:.2f}\n")
