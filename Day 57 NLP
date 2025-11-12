@@ -1,0 +1,33 @@
+# 🪄 Simple Sentiment Analysis using NLP
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB
+
+# 🧾 Sample dataset
+reviews = [
+    "I love this movie, it was amazing!",
+    "This film was terrible and boring.",
+    "I enjoyed every moment of the movie.",
+    "The plot was dull and acting was bad.",
+    "Fantastic direction and great story!",
+    "Worst movie I have ever seen."
+]
+
+labels = ["positive", "negative", "positive", "negative", "positive", "negative"]
+
+# ✂️ Split data
+X_train, X_test, y_train, y_test = train_test_split(reviews, labels, test_size=0.3, random_state=42)
+
+# 🧮 Convert text to numbers
+vectorizer = CountVectorizer()
+X_train_vec = vectorizer.fit_transform(X_train)
+X_test_vec = vectorizer.transform(X_test)
+
+# 🤖 Train model
+model = MultinomialNB()
+model.fit(X_train_vec, y_train)
+
+# 🔮 Predict
+new_review = ["The movie was super fun and exciting!"]
+new_vec = vectorizer.transform(new_review)
+print("Prediction:", model.predict(new_vec)[0])
