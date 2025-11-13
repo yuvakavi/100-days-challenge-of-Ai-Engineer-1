@@ -1,0 +1,40 @@
+# Step 1: Import libraries
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.decomposition import LatentDirichletAllocation
+from nltk.corpus import stopwords
+import nltk
+nltk.download('stopwords')
+
+# Step 2: Sample dataset
+data = {
+    'news': [
+        "The government announced new policies for farmers",
+        "The cricket team won the championship yesterday",
+        "New AI tools are transforming the technology industry",
+        "Elections are scheduled to happen next month",
+        "A new smartphone was launched with amazing features",
+        "The player scored a century in the world cup match",
+        "The parliament passed the education reform bill",
+        "Data science and AI are changing healthcare",
+        "The team prepared for the final game",
+        "The president addressed the nation about reforms"
+    ]
+}
+
+df = pd.DataFrame(data)
+
+# Step 3: Convert text into word frequency matrix
+vectorizer = CountVectorizer(stop_words=stopwords.words('english'))
+X = vectorizer.fit_transform(df['news'])
+
+# Step 4: Apply LDA (Latent Dirichlet Allocation)
+lda = LatentDirichletAllocation(n_components=3, random_state=42)
+lda.fit(X)
+
+# Step 5: Display top words per topic
+words = vectorizer.get_feature_names_out()
+
+for i, topic in enumerate(lda.components_):
+    print(f"\n Topic {i+1}:")
+    print([words[j] for j in topic.argsort()[-7:]])
