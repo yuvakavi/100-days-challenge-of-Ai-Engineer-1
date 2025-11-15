@@ -1,0 +1,24 @@
+from transformers import pipeline
+
+# Load BERT Question Answering Pipeline
+qa_pipeline = pipeline("question-answering", model="distilbert-base-cased-distilled-squad")
+
+# Paragraph to read
+context = """
+BERT (Bidirectional Encoder Representations from Transformers) is a deep learning model 
+developed by Google. It understands text using bidirectional transformers and is used 
+for NLP tasks like question answering, sentiment analysis, and text classification.
+"""
+
+# Ask a question
+question = "Who developed BERT?"
+
+# Get answer
+result = qa_pipeline({
+    "context": context,
+    "question": question
+})
+
+print("Question:", question)
+print("Answer:", result["answer"])
+print("Score:", result["score"])
