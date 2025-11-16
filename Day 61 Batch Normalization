@@ -1,0 +1,64 @@
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, BatchNormalization
+from tensorflow.keras.utils import to_categorical
+from sklearn.preprocessing import LabelEncoder
+import matplotlib.pyplot as plt
+
+# ---------------- LOAD DATASET ----------------
+# Tiny dataset for fake news headlines
+data = {
+    "headline": [
+        "PM announces new economic policy",
+        "Scientists discover cure for cancer",
+        "Actor caught in fake sting operation",
+        "Government to provide free tablets",
+        "Aliens have landed in New York",
+        "Man claims he can stop time",
+        "Schools to reopen next month",
+        "Woman travels to Mars in 5 hours"
+    ],
+    "label": ["real", "real", "fake", "real", "fake", "fake", "real", "fake"]
+}
+
+df = pd.DataFrame(data)
+
+# Encode labels
+le = LabelEncoder()
+df["label"] = le.fit_transform(df["label"])  # 0=fake, 1=real
+
+# TF-IDF vectorizer
+tfidf = TfidfVectorizer()
+X = tfidf.fit_transform(df["headline"]).toarray()
+y = df["label"]
+
+# Train-test split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# ---------------- BUILD MODEL ----------------
+model = Sequential([
+    Dense(32, input_dim=X_train.shape[1], activation='relu'),
+    BatchNormalization(),          # <-- applied in NLP
+    Dense(16, activation='relu'),
+    BatchNormalization(),
+    Dense(1, activation='sigmoid')
+])
+
+model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+
+# Train
+history = model.fit(X_train, y_train, epochs=10, validation_split=0.2, verbose=0)
+
+# Evaluate
+loss, acc = model.evaluate(X_test, y_test, verbose=0)
+print("Test Accuracy:", acc)
+
+# Plot
+plt.plot(history.history["accuracy"], label="Train Acc")
+plt.plot(history.history["val_accuracy"], label="Val Acc")
+plt.legend()
+plt.title("Fake News Detection Using BatchNorm")
+plt.show()
