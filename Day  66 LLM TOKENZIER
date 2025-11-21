@@ -1,0 +1,37 @@
+import re
+
+# Vocabulary dictionary (simple)
+vocab = {
+    "play": 10, "ing": 4, "foot": 25, "ball": 33,
+    "is": 2, "the": 7, "a": 9,
+}
+
+def simple_tokenizer(text):
+    words = text.lower().split()          # Step 1: word split
+    tokens = []
+    token_ids = []
+
+    for word in words:
+        # Step 2: split by simple heuristic
+        if word.endswith("ing"):
+            sub1 = word[:-3]
+            sub2 = "ing"
+            tokens += [sub1, sub2]
+        elif len(word) > 4:
+            sub1 = word[:4]
+            sub2 = word[4:]
+            tokens += [sub1, sub2]
+        else:
+            tokens.append(word)
+
+    # Step 3: convert to token IDs
+    for t in tokens:
+        token_ids.append(vocab.get(t, 0))   # unknown = 0
+
+    return tokens, token_ids
+
+
+sentence = "playing football"
+tokens, token_ids = simple_tokenizer(sentence)
+print("Tokens:", tokens)
+print("Token IDs:", token_ids)
