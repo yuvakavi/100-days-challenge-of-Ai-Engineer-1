@@ -1,0 +1,38 @@
+import zipfile
+from google.colab import files
+import os
+
+uploaded = files.upload()
+
+zip_filename = list(uploaded.keys())[0]
+print("Uploaded:", zip_filename)
+
+
+with zipfile.ZipFile(zip_filename, 'r') as zip_ref:
+    zip_ref.extractall('.')
+
+extracted_files = os.listdir('.')
+text_files = [f for f in extracted_files if f.endswith('.txt')]
+
+if text_files:
+    filename = text_files[0] 
+    print(f"Extracted text file: {filename}")
+elif 'data.txt' in extracted_files:
+    filename = 'data.txt'
+    print(f"Using default extracted text file: {filename}")
+else:
+    print("No text file found after extraction. Please check the zip content.")
+    filename = None
+text = open(filename).read().lower()
+
+question = input("Ask your question: ").lower()
+
+sentences = text.split(".")
+answer = "No matching answer found."
+
+for s in sentences:
+    if any(word in s for word in question.split()):
+        answer = s.strip()
+        break
+
+print("\nAnswer:", answer)
