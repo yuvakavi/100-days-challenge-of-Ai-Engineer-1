@@ -1,0 +1,35 @@
+pip install faiss-cpu sentence-transformers
+from sentence_transformers import SentenceTransformer
+import faiss
+import numpy as np
+
+# 1. Sentences to store
+sentences = [
+    "Tomato needs sunlight",
+    "Onion grows in cool season",
+    "Rice needs a lot of water",
+    "Wheat grows in winter"
+]
+
+# 2. Load embedding model
+model = SentenceTransformer("all-MiniLM-L6-v2")
+
+# 3. Convert sentences → vectors
+embeddings = model.encode(sentences)
+embeddings = np.array(embeddings).astype("float32")
+
+# 4. Create FAISS index
+index = faiss.IndexFlatL2(embeddings.shape[1])
+
+# 5. Add vectors
+index.add(embeddings)
+
+# 6. Query
+query = "Which crop needs water?"
+query_vec = model.encode([query]).astype("float32")
+
+# 7. Search top 1
+distance, idx = index.search(query_vec, 1)
+
+print("Your Query:", query)
+print("Best Match:", sentences[idx[0][0]])
