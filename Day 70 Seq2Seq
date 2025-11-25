@@ -1,0 +1,43 @@
+import numpy as np
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Input, LSTM, Dense
+
+
+input_texts = ["hello", "how are you", "thanks", "good morning"]
+target_texts = ["_olleh_", "_uoy era woh_", "_sknaht_", "_gninrom doog_"]
+
+
+chars = sorted(list(set("".join(input_texts + target_texts))))
+char_to_index = {c: i for i, c in enumerate(chars)}
+index_to_char = {i: c for i, c in enumerate(chars)}
+
+max_len = max(len(txt) for txt in input_texts + target_texts)
+
+def vectorize(texts):
+    x = np.zeros((len(texts), max_len, len(chars)))
+    for i, text in enumerate(texts):
+        for t, char in enumerate(text):
+            x[i, t, char_to_index[char]] = 1
+    return x
+
+encoder_input = vectorize(input_texts)
+decoder_output = vectorize(target_texts)
+
+
+encoder_inputs = Input(shape=(None, len(chars)))
+encoder_lstm = LSTM(128, return_state=True)
+_, state_h, state_c = encoder_lstm(encoder_inputs)
+encoder_states = [state_h, state_c]
+
+
+decoder_inputs = Input(shape=(None, len(chars)))
+decoder_lstm = LSTM(128, return_sequences=True, return_state=True)
+decoder_outputs, _, _ = decoder_lstm(decoder_inputs, initial_state=encoder_states)
+decoder_dense = Dense(len(chars), activation="softmax")
+decoder_outputs = decoder_dense(decoder_outputs)
+
+model = Model([encoder_inputs, decoder_inputs], decoder_outputs)
+model.compile(optimizer="adam", loss="categorical_crossentropy")
+model.summary()
+
+model.fit([encoder_input, decoder_output], decoder_output, epochs=50)
