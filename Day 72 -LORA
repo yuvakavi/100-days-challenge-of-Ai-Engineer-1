@@ -1,0 +1,73 @@
+
+!pip install transformers peft accelerate -q
+
+from transformers import AutoModelForSeq2SeqLM, AutoTokenizer, Trainer, TrainingArguments
+from peft import LoraConfig, get_peft_model
+import torch
+
+
+data = [
+    {"instruction": "What is the best crop for sandy soil?",
+     "output": "Groundnut grows well in sandy soil."},
+
+    {"instruction": "How to treat leaf blight?",
+     "output": "Remove infected leaves and spray fungicide."}
+]
+
+
+model_name = "google/flan-t5-small"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+
+
+config = LoraConfig(
+    r=4,
+    lora_alpha=16,
+    target_modules=["q", "v"],
+    lora_dropout=0.05,
+)
+model = get_peft_model(model, config)
+
+
+train_data = []
+for row in data:
+    prompt = row["instruction"]
+    answer = row["output"]
+
+    train_data.append({
+        "input_ids": tokenizer(prompt, return_tensors="pt").input_ids[0],
+        "labels": tokenizer(answer, return_tensors="pt").input_ids[0]
+    })
+
+class SimpleDataset:
+    def __init__(self, data):
+        self.data = data
+    def __len__(self):
+        return len(self.data)
+    def __getitem__(self, idx):
+        return self.data[idx]
+
+train_ds = SimpleDataset(train_data)
+
+
+args = TrainingArguments(
+    output_dir="./lora_model",
+    per_device_train_batch_size=1,
+    num_train_epochs=3,
+    logging_steps=1,
+)
+
+
+trainer = Trainer(
+    model=model,
+    args=args,
+    train_dataset=train_ds,
+)
+
+trainer.train()
+
+print("\n--- TEST ---")
+test = "How to treat leaf blight?"
+inputs = tokenizer(test, return_tensors="pt")
+output = model.generate(**inputs, max_length=50)
+print("Model answer:", tokenizer.decode(output[0], skip_special_tokens=True))
