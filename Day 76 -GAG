@@ -1,0 +1,33 @@
+
+data = [
+    "chr1	tool	gene	100	300	.	+	.	ID=gene1",
+    "chr1	tool	exon	100	150	.	+	.",
+    "BAD LINE",
+]
+
+cleaned = []
+
+for line in data:
+    parts = line.split("\t")
+
+    if len(parts) != 9:
+        continue  
+
+    feature = parts[2]
+    attributes = parts[8]
+
+    if feature == "exon":
+        if "ID=" not in attributes:
+            attributes += ";ID=exon1"
+        if "Parent=" not in attributes:
+            attributes += ";Parent=gene1"
+
+    parts[8] = attributes
+
+    
+    cleaned.append("\t".join(parts))
+
+
+print("Cleaned GFF Data:\n")
+for c in cleaned:
+    print(c)
