@@ -1,0 +1,21 @@
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
+model = AutoModelForCausalLM.from_pretrained("gpt2")
+tokenizer = AutoTokenizer.from_pretrained("gpt2")
+
+context = """
+User: I love computer vision and ML.
+User: I am learning deep learning.
+User: Suggest a project for me.
+"""
+
+input_ids = tokenizer.encode(context, return_tensors="pt")
+
+output = model.generate(
+    input_ids,
+    max_length=len(input_ids[0])+50,
+    do_sample=True,
+    temperature=0.7,
+)
+
+print(tokenizer.decode(output[0]))
