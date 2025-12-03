@@ -1,0 +1,25 @@
+!pip install transformers sentence-transformers -q
+
+from transformers import pipeline
+
+# Load a small GPT model for QA
+qa_bot = pipeline("question-answering", model="distilbert-base-cased-distilled-squad")
+
+# Your custom notes / text
+context = """
+Sandy soil is good for groundnut, millets, watermelon.
+Clay soil is suitable for rice and wheat.
+Tomato leaf spot is treated with Neem oil or copper fungicide.
+"""
+
+print("📘 Mini GPT QA Bot Ready!")
+print("Ask questions based on the above notes.\n")
+
+while True:
+    q = input("You: ")
+
+    if q.lower() == "exit":
+        break
+
+    result = qa_bot(question=q, context=context)
+    print("🤖 GPT:", result["answer"], "\n")
