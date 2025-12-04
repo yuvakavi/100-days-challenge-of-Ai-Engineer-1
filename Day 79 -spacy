@@ -1,0 +1,14 @@
+import spacy
+
+nlp = spacy.load("en_core_web_sm")
+
+text = """
+Ravi visited Chennai on 12 August 2024 for a crop workshop.
+He met Dr. Kumar from Tamil Nadu Agricultural University.
+"""
+
+doc = nlp(text)
+
+print("📌 Extracted Entities:\n")
+for ent in doc.ents:
+    print(ent.text, " → ", ent.label_)
