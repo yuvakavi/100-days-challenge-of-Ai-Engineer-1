@@ -1,0 +1,25 @@
+print("🦅 Simple Falcon Manual Chatbot Ready!")
+print("Type 'exit' to stop.\n")
+
+data = {
+    "hello": "Hi! How can I help you?",
+    "hi": "Hello! What do you want to know?",
+    "crop for sandy soil": "Groundnut, millet, and watermelon grow well in sandy soil.",
+    "tomato disease": "Common tomato diseases are leaf spot, blight, and curl virus.",
+    "price of rice": "Rice price depends on state, district, and mandi.",
+    "help": "You can ask about crops, soil, disease, price, etc."
+}
+
+while True:
+    q = input("You: ").lower().strip()
+
+    # Exit condition
+    if q == "exit":
+        print("Chatbot stopped. Goodbye! 👋")
+        break
+
+    # Manual data matching
+    if q in data:
+        print("🤖 Falcon:", data[q], "\n")
+    else:
+        print("🤖 Falcon: Sorry, I don’t have data for that. Try another question.\n")
