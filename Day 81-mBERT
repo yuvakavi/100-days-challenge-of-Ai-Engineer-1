@@ -1,0 +1,58 @@
+from transformers import BertTokenizer, BertForSequenceClassification, Trainer, TrainingArguments
+import torch
+from torch.utils.data import Dataset 
+
+model_name = "bert-base-multilingual-cased"
+tokenizer = BertTokenizer.from_pretrained(model_name)
+model = BertForSequenceClassification.from_pretrained(model_name, num_labels=2)
+
+texts = [
+    "I love this!",
+    "This is amazing",
+    "இந்தப் பொருள் அருமை",
+    "நான் இதை விரும்பவில்லை",
+    "यह बहुत अच्छा है",
+    "यह खराब है"
+]
+labels = [1, 1, 1, 0, 1, 0]
+
+
+class MultilingualSentimentDataset(Dataset):
+    def __init__(self, encodings, labels):
+        self.encodings = encodings
+        self.labels = torch.tensor(labels)
+
+    def __getitem__(self, idx):
+        return {
+            'input_ids': self.encodings['input_ids'][idx],
+            'attention_mask': self.encodings['attention_mask'][idx],
+            'labels': self.labels[idx]
+        }
+
+    def __len__(self):
+        return len(self.labels)
+
+enc = tokenizer(texts, padding=True, truncation=True, return_tensors="pt")
+
+
+dataset = MultilingualSentimentDataset(enc, labels)
+
+
+args = TrainingArguments(
+    output_dir="./out",
+    num_train_epochs=1,
+    per_device_train_batch_size=4,
+    logging_steps=5,
+    save_strategy="no",
+    report_to="none" 
+)
+
+
+trainer = Trainer(model=model, args=args, train_dataset=dataset)
+trainer.train()
+
+test_text = "நான் இதை மிகவும் விரும்புகிறேன்"   
+x = tokenizer(test_text, return_tensors="pt")
+pred = torch.argmax(model(**x).logits).item()
+
+print("Prediction:", "Positive" if pred == 1 else "Negative")
