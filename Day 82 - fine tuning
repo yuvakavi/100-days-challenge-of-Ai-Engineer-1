@@ -1,0 +1,85 @@
+!pip install transformers datasets accelerate -q
+
+# Disable W&B
+import os
+os.environ["WANDB_DISABLED"] = "true"
+
+# ----------------------------
+# 1. Create tiny dataset
+# ----------------------------
+from datasets import Dataset
+
+data = [
+    {"instruction": "What is the best crop for sandy soil?",
+     "output": "Groundnut grows well in sandy soil."},
+
+    {"instruction": "How to treat tomato leaf curl disease?",
+     "output": "Use insecticides for whiteflies and remove damaged leaves."},
+
+    {"instruction": "Which crop is good for summer?",
+     "output": "Watermelon and cucumber are good summer crops."},
+
+    {"instruction": "How to increase soil fertility?",
+     "output": "Add compost, use cow dung, and practice crop rotation."},
+]
+
+dataset = Dataset.from_list(data)
+
+# ----------------------------
+# 2. Preprocess
+# ----------------------------
+from transformers import AutoTokenizer
+
+model_name = "google/flan-t5-small"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+def preprocess(batch):
+    inputs = [f"Instruction: {i}\nAnswer:" for i in batch["instruction"]]
+    targets = batch["output"]
+
+    model_inputs = tokenizer(inputs, padding="max_length", truncation=True, max_length=128)
+    labels = tokenizer(targets, padding="max_length", truncation=True, max_length=128)
+
+    model_inputs["labels"] = labels["input_ids"]
+    return model_inputs
+
+tokenized_dataset = dataset.map(preprocess, batched=True)
+
+# ----------------------------
+# 3. Fine-Tune (clean — no W&B)
+# ----------------------------
+from transformers import AutoModelForSeq2SeqLM, TrainingArguments, Trainer
+
+model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+
+training_args = TrainingArguments(
+    output_dir="finetuned-agri-model",
+    report_to="none",                 # <--- disable wandb, tensorboard, etc
+    per_device_train_batch_size=2,
+    learning_rate=2e-4,
+    num_train_epochs=5,
+    logging_steps=1,
+    save_total_limit=1
+)
+
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=tokenized_dataset,
+)
+
+trainer.train()
+
+model.save_pretrained("agri_finetuned_t5")
+tokenizer.save_pretrained("agri_finetuned_t5")
+
+# ----------------------------
+# 4. Test Fine-Tuned Model
+# ----------------------------
+from transformers import pipeline
+
+pipe = pipeline("text2text-generation", 
+                model="agri_finetuned_t5", 
+                tokenizer="agri_finetuned_t5")
+
+print(pipe("Instruction: Best crop for sandy soil?\nAnswer:")[0]["generated_text"])
