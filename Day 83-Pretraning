@@ -1,0 +1,85 @@
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torch.nn.functional as F
+
+
+
+text = """
+machine learning is amazing
+ai will change the world
+deep learning helps machines think
+"""
+
+chars = sorted(list(set(text)))
+stoi = {ch:i for i,ch in enumerate(chars)}
+itos = {i:ch for ch,i in stoi.items()}
+
+
+data = torch.tensor([stoi[ch] for ch in text], dtype=torch.long)
+
+
+
+block_size = 20
+def get_batch():
+    ix = torch.randint(0, len(data) - block_size - 1, (32,))
+    x = torch.stack([data[i:i+block_size] for i in ix])
+    y = torch.stack([data[i+1:i+block_size+1] for i in ix])
+    return x, y
+
+
+class TinyGPT(nn.Module):
+    def __init__(self, vocab_size, embed=64):
+        super().__init__()
+        self.token_embed = nn.Embedding(vocab_size, embed)
+        self.pos_embed = nn.Embedding(block_size, embed)
+        self.l1 = nn.Linear(embed, embed)
+        self.l2 = nn.Linear(embed, vocab_size)
+
+    def forward(self, x):
+        B, T = x.shape
+        token = self.token_embed(x)
+        pos = self.pos_embed(torch.arange(T))
+        out = token + pos
+        out = F.relu(self.l1(out))
+        logits = self.l2(out)
+        return logits
+
+model = TinyGPT(len(chars))
+
+optimizer = optim.Adam(model.parameters(), lr=1e-3)
+loss_fn = nn.CrossEntropyLoss()
+
+
+for step in range(1000):
+    xb, yb = get_batch()
+
+    logits = model(xb)
+    loss = loss_fn(logits.view(-1, len(chars)), yb.view(-1))
+
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+
+    if step % 100 == 0:
+        print("Step:", step, "Loss:", loss.item())
+
+print("\n Pretraining completed!\n")
+
+
+
+def generate(model, start="a", max_new_tokens=100):
+    model.eval()
+    context = torch.tensor([stoi[ch] for ch in start], dtype=torch.long)[None, :]
+
+    for _ in range(max_new_tokens):
+        logits = model(context[:, -block_size:])
+        logits = logits[:, -1, :]
+        probs = F.softmax(logits, dim=-1)
+        next_id = torch.multinomial(probs, num_samples=1)
+        context = torch.cat([context, next_id], dim=1)
+
+    return "".join([itos[i.item()] for i in context[0]])
+
+print("Generated text:\n")
+print(generate(model, start="a"))
