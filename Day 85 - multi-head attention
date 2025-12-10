@@ -1,0 +1,19 @@
+import torch
+import torch.nn as nn
+
+
+seq_len = 5    
+d_model = 8    
+num_heads = 2  
+
+
+x = torch.rand((1, seq_len, d_model))  
+
+
+mha = nn.MultiheadAttention(embed_dim=d_model, num_heads=num_heads, batch_first=True)
+gi
+output, attn_weights = mha(x, x, x)
+
+print("Input shape:", x.shape)
+print("Output shape:", output.shape)
+print("Attention weights shape:", attn_weights.shape)
