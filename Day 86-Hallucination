@@ -1,0 +1,14 @@
+knowledge_base = {
+    "apple": "Apple is a fruit.",
+    "india": "India is a country in South Asia.",
+    "water": "Water is essential for life.",
+}
+user_input = "What is unicorn electricity?"
+def detect_hallucination(question, kb):
+    keyword = question.lower().split()[2] 
+    if keyword not in kb:
+        return "⚠️ High chance of hallucination (Not in database)"
+    else:
+        return kb[keyword]
+
+print(detect_hallucination(user_input, knowledge_base))
