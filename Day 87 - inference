@@ -1,0 +1,23 @@
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
+
+tokenizer = AutoTokenizer.from_pretrained("gpt2")
+model = AutoModelForCausalLM.from_pretrained("gpt2")
+
+
+prompt = "AI will change the world because"
+
+
+inputs = tokenizer(prompt, return_tensors="pt")
+
+
+output_tokens = model.generate(
+    inputs["input_ids"],
+    max_length=40,
+    temperature=0.7
+)
+
+
+generated_text = tokenizer.decode(output_tokens[0], skip_special_tokens=True)
+
+print(generated_text)
