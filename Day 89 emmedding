@@ -1,0 +1,27 @@
+# Install once
+# pip install sentence-transformers scikit-learn
+
+from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
+
+# Load model
+model = SentenceTransformer('all-MiniLM-L6-v2')
+
+# Input sentences
+sentence1 = "I love agriculture"
+sentence2 = "I like farming"
+
+# Create embeddings
+emb1 = model.encode([sentence1])
+emb2 = model.encode([sentence2])
+
+# Calculate similarity
+score = cosine_similarity(emb1, emb2)[0][0]
+
+print("Similarity Score:", round(score, 2))
+
+# Decision
+if score > 0.7:
+    print("Sentences are Similar")
+else:
+    print("Sentences are Not Similar")
