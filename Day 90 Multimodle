@@ -1,0 +1,17 @@
+from transformers import pipeline
+
+
+qa = pipeline("question-answering")
+
+context = """
+Java is a high-level, object-oriented programming language.
+It is platform independent because of JVM.
+Java is widely used in web, mobile, and enterprise applications.
+"""
+
+
+question = "Why is Java platform independent?"
+
+result = qa(question=question, context=context)
+
+print("Answer:", result["answer"])
