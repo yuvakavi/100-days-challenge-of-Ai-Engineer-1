@@ -1,0 +1,56 @@
+def generate_prompt(number):
+    prompt = f"""
+You are a logical reasoning assistant.
+
+Task:
+1. Check whether the number is Even or Odd.
+2. Check whether the number is Prime or Not.
+3. Explain the logic step by step.
+4. Give the final result clearly.
+
+Input Number: {number}
+
+Output Format:
+Even/Odd:
+Prime/Not Prime:
+Explanation:
+"""
+    return prompt
+
+
+def logical_reasoning(number):
+ 
+    if number % 2 == 0:
+        even_odd = "Even"
+    else:
+        even_odd = "Odd"
+
+    
+    if number <= 1:
+        prime_status = "Not Prime"
+    else:
+        for i in range(2, int(number ** 0.5) + 1):
+            if number % i == 0:
+                prime_status = "Not Prime"
+                break
+        else:
+            prime_status = "Prime"
+
+
+    print("\n--- AI LOGIC RESPONSE ---")
+    print(f"Even/Odd: {even_odd}")
+    print(f"Prime/Not Prime: {prime_status}")
+    print("Explanation:")
+    print(f"The number {number} is checked using logical conditions.")
+    print(f"It is {even_odd} because it {'is' if even_odd=='Even' else 'is not'} divisible by 2.")
+    print(f"It is {prime_status} based on divisibility rules.")
+
+
+number = int(input("Enter a number: "))
+
+prompt = generate_prompt(number)
+
+print("\n--- GENERATED PROMPT ---")
+print(prompt)
+
+logical_reasoning(number)
