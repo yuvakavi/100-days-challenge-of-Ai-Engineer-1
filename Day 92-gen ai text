@@ -1,0 +1,25 @@
+from transformers import GPT2LMHeadModel, GPT2Tokenizer
+
+# Load tokenizer and model
+tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
+model = GPT2LMHeadModel.from_pretrained("gpt2")
+
+# User input prompt
+prompt = input("Enter a text prompt: ")
+
+# Convert text to tokens
+inputs = tokenizer.encode(prompt, return_tensors="pt")
+
+# Generate text
+outputs = model.generate(
+    inputs,
+    max_length=100,
+    num_return_sequences=1,
+    no_repeat_ngram_size=2,
+    early_stopping=True
+)
+
+# Decode and print generated text
+generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+print("\nGenerated Text:\n")
+print(generated_text)
