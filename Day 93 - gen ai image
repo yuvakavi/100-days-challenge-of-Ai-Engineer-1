@@ -1,0 +1,30 @@
+from PIL import Image, ImageDraw
+import random
+import matplotlib.pyplot as plt
+
+width, height = 400, 400
+image = Image.new("RGB", (width, height), "white")
+draw = ImageDraw.Draw(image)
+
+for i in range(25):
+    x1 = random.randint(0, width)
+    y1 = random.randint(0, height)
+    x2 = x1 + random.randint(30, 100)
+    y2 = y1 + random.randint(30, 100)
+
+    color = (
+        random.randint(0, 255),
+        random.randint(0, 255),
+        random.randint(0, 255)
+    )
+
+    draw.rectangle([x1, y1, x2, y2], fill=color)
+
+
+plt.imshow(image)
+plt.axis("off")
+plt.title("Generated Image")
+plt.show()
+
+
+image.save("generated_image.png")
