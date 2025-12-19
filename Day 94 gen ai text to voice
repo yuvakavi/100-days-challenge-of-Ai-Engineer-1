@@ -1,0 +1,11 @@
+!pip install gTTS
+!pip install gtts playsound
+from gtts import gTTS
+from IPython.display import Audio
+
+text = input("Enter text: ")
+
+tts = gTTS(text=text, lang='en')
+tts.save("voice.mp3")
+
+Audio("voice.mp3")
